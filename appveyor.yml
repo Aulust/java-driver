@@ -1,0 +1,23 @@
+environment:
+  matrix:
+    #- java_version: 1.7.0
+    #  cassandra_version: 3.0.3
+    - java_version: 1.8.0
+      cassandra_version: 3.0.5
+platform:
+  - x64
+install:
+  - ps: .\appveyor.ps1
+build_script:
+  - ps: mvn install -DskipTests=true
+test_script:
+  - ps: mvn "-Dcassandra.version=$($env:cassandra_version)" test -Pshort
+cache:
+  - C:\Users\appveyor\.m2
+  - C:\ProgramData\chocolatey\bin                                                                                                     
+  - C:\ProgramData\chocolatey\lib
+  - C:\Users\appveyor\maven
+  - C:\Users\appveyor\jce_policy-1.7.0.zip
+  - C:\Users\appveyor\jce_policy-1.8.0.zip
+  - C:\Users\appveyor\.ccm\repository
+  - C:\Users\appveyor\ccm
