@@ -1,10 +1,10 @@
 environment:
+  test_profile: unit
+  cassandra_version: 3.0.5
   matrix:
-    #- java_version: 1.7.0
-    #  cassandra_version: 3.0.3
+    - java_version: 1.7.0
     - java_version: 1.8.0
-      cassandra_version: 3.0.5
-      test_profile: default
+      test_profile: short
 platform:
   - x64
 install:
