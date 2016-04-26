@@ -4,7 +4,7 @@ environment:
     #  cassandra_version: 3.0.3
     - java_version: 1.8.0
       cassandra_version: 3.0.5
-      test_profile: unit
+      test_profile: default
 platform:
   - x64
 install:
