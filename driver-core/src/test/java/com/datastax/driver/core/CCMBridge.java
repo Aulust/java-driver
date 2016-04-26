@@ -448,7 +448,11 @@ public class CCMBridge implements CCMAccess {
     public void start(int n) {
         logger.debug(String.format("Starting: node %s (%s%s:%s) in %s", n, TestUtils.IP_PREFIX, n, binaryPort, this));
         try {
-            execute(CCM_COMMAND + " node%d start --wait-other-notice --wait-for-binary-proto" + jvmArgs, n);
+            String cmd = CCM_COMMAND + " node%d start --wait-other-notice --wait-for-binary-proto" + jvmArgs;
+            if (isWindows() && this.version.compareTo(VersionNumber.parse("2.2.4")) >= 0) {
+                cmd += " --quiet-windows";
+            }
+            execute(cmd, n);
         } catch (CCMException e) {
             logger.error(String.format("Could not start node %s in %s", n, this), e);
             logger.error("CCM output:\n{}", e.getOut());
