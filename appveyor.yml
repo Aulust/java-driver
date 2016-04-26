@@ -12,7 +12,7 @@ install:
 build_script:
   - ps: mvn -B install -DskipTests=true
 test_script:
-  - ps: mvn -B "-Dcassandra.version=$($env:cassandra_version) test -P$($env:test_profile)"
+  - ps: mvn -B -Dcassandra.version=$($env:cassandra_version) test -P$($env:test_profile)
 cache:
   - C:\Users\appveyor\.m2
   - C:\ProgramData\chocolatey\bin
