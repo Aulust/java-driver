@@ -502,10 +502,11 @@ class Connection {
 
     public ResponseHandler write(ResponseCallback callback, boolean startTimeout) throws ConnectionException, BusyConnectionException {
 
-        Message.Request request = callback.request();
-
         ResponseHandler handler = new ResponseHandler(this, callback);
         dispatcher.add(handler);
+
+        // JAVA-1179: defensively guard against reusing same request object twice
+        Message.Request request = callback.request().copy();
         request.setStreamId(handler.streamId);
 
         /*

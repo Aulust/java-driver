@@ -64,7 +64,7 @@ class RequestHandler {
     private final long startTime;
 
     private final AtomicBoolean isDone = new AtomicBoolean();
-    private AtomicInteger executionCount = new AtomicInteger();
+    private final AtomicInteger executionCount = new AtomicInteger();
 
     public RequestHandler(SessionManager manager, Callback callback, Statement statement) {
         this.id = Long.toString(System.identityHashCode(this));
@@ -104,14 +104,9 @@ class RequestHandler {
         if (isDone.get())
             return;
 
-        Message.Request request = callback.request();
         int position = executionCount.incrementAndGet();
-        // Clone the request after the first execution, since we set the streamId on it later and we
-        // don't want to share that across executions.
-        if (position > 1)
-            request = request.copy();
 
-        SpeculativeExecution execution = new SpeculativeExecution(request, position);
+        SpeculativeExecution execution = new SpeculativeExecution(position);
         runningExecutions.add(execution);
         execution.sendRequest();
     }
@@ -242,7 +237,6 @@ class RequestHandler {
      */
     class SpeculativeExecution implements Connection.ResponseCallback {
         final String id;
-        private final Message.Request request;
         private volatile Host current;
         private volatile ConsistencyLevel retryConsistencyLevel;
         private final AtomicReference<QueryState> queryStateRef;
@@ -256,9 +250,8 @@ class RequestHandler {
 
         private volatile Connection.ResponseHandler connectionHandler;
 
-        SpeculativeExecution(Message.Request request, int position) {
+        SpeculativeExecution(int position) {
             this.id = RequestHandler.this.id + "-" + position;
-            this.request = request;
             this.queryStateRef = new AtomicReference<QueryState>(QueryState.INITIAL);
             if (logger.isTraceEnabled())
                 logger.trace("[{}] Starting", id);
@@ -404,6 +397,7 @@ class RequestHandler {
 
         @Override
         public Message.Request request() {
+            Message.Request request = callback.request();
             if (retryConsistencyLevel != null && retryConsistencyLevel != request.consistency())
                 return request.copy(retryConsistencyLevel);
             else

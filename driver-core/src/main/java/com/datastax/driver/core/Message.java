@@ -140,9 +140,7 @@ abstract class Message {
             }
         }
 
-        Request copy() {
-            throw new UnsupportedOperationException();
-        }
+        abstract Request copy();
 
         Request copy(ConsistencyLevel newConsistencyLevel) {
             throw new UnsupportedOperationException();
